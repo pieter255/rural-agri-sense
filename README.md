@@ -1,73 +1,254 @@
-# Welcome to your Lovable project
 
-## Project info
+# AgroSense - Smart Agriculture Advisor
 
-**URL**: https://lovable.dev/projects/dbbce8f2-1ac5-484a-95bd-78c23aa2c59a
+A comprehensive Progressive Web App (PWA) designed for rural farmers, offering AI-powered crop health analysis, weather forecasting, pest management, and multi-language support (English/Sesotho).
 
-## How can I edit this code?
+## 🌾 Features
 
-There are several ways of editing your application.
+### Frontend (React + Vite + Tailwind CSS)
+- **Responsive Dashboard**: Weather overview, quick actions, and alerts
+- **AI Crop Analysis**: Upload/camera image analysis for disease detection
+- **Weather Monitoring**: Real-time weather data and 5-day forecasts
+- **AI-Powered Forecasts**: Yield predictions, pest risk assessment, market trends
+- **Chat Advisor**: Voice/text AI assistant with Sesotho support
+- **Multi-language**: English and Sesotho (Southern Sotho) support
+- **PWA Capabilities**: Offline functionality, installable app
+- **Accessibility**: ARIA labels, semantic HTML, keyboard navigation
 
-**Use Lovable**
+### Backend (Flask - Ready for Integration)
+- **Image Analysis API**: Crop disease detection using AI models
+- **Weather Integration**: OpenWeatherMap API integration
+- **Forecast Models**: ML-powered yield and pest predictions
+- **NLP Support**: Multi-language query processing
+- **Database**: SQLite/PostgreSQL for data persistence
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/dbbce8f2-1ac5-484a-95bd-78c23aa2c59a) and start prompting.
+### AI Modules (Mock Implementation Included)
+- **Computer Vision**: Crop disease classification
+- **Machine Learning**: Yield and pest prediction models
+- **Natural Language Processing**: Sesotho/English chat support
+- **Voice Recognition**: Speech-to-text functionality
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Quick Start
 
-**Use your preferred IDE**
+### Prerequisites
+- Node.js 16+ and npm
+- Modern web browser with PWA support
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation & Setup
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd agrosense
+   ```
 
-Follow these steps:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. **Open in browser**
+   ```
+   http://localhost:8080
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+5. **Install as PWA** (Optional)
+   - Open browser menu → "Install AgroSense" or "Add to Home Screen"
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Building for Production
+
+```bash
+# Build the application
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-**Edit a file directly in GitHub**
+## 📱 PWA Features
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Installation
+- Install directly from browser
+- Works offline with cached data
+- Native app-like experience
+- Push notifications for weather alerts
 
-**Use GitHub Codespaces**
+### Offline Capabilities
+- Cached weather data
+- Previous analysis results
+- Basic chat functionality
+- Core app features available offline
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🌍 Multi-Language Support
 
-## What technologies are used for this project?
+### Supported Languages
+- **English**: Full feature support
+- **Sesotho (Southern Sotho)**: Native language support for Lesotho farmers
 
-This project is built with:
+### Language Features
+- UI translation
+- Voice input/output
+- Chat advisor responses
+- Weather and forecast descriptions
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔧 Technology Stack
 
-## How can I deploy this project?
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for responsive styling
+- **Shadcn/UI** for component library
+- **Recharts** for data visualization
+- **React Query** for state management
 
-Simply open [Lovable](https://lovable.dev/projects/dbbce8f2-1ac5-484a-95bd-78c23aa2c59a) and click on Share -> Publish.
+### PWA Technologies
+- **Service Worker** for offline functionality
+- **Web Manifest** for app installation
+- **Cache API** for offline data storage
+- **Push API** for notifications
 
-## Can I connect a custom domain to my Lovable project?
+### AI Integration Points
+- **Image Analysis**: Ready for TensorFlow.js integration
+- **Speech Recognition**: Browser Web Speech API
+- **NLP Processing**: Prepared for Rasa/spaCy integration
 
-Yes, you can!
+## 📊 Architecture Overview
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```
+/src
+├── components/          # Reusable UI components
+│   ├── ImageAnalysis.tsx    # Crop image upload/analysis
+│   ├── ChatAdvisor.tsx      # AI chat interface
+│   ├── WeatherDashboard.tsx # Weather display
+│   ├── ForecastDashboard.tsx # AI predictions
+│   └── LanguageToggle.tsx   # Language switcher
+├── hooks/              # Custom React hooks
+│   └── useLanguage.tsx     # Multi-language support
+├── pages/              # Main application pages
+│   └── Index.tsx           # Dashboard page
+└── lib/                # Utility functions
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+/public
+├── manifest.json       # PWA manifest
+├── sw.js              # Service worker
+└── icons/             # PWA icons
+```
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary**: Agricultural green (#22c55e)
+- **Secondary**: Earth tones and sky blues
+- **Accent**: Warm oranges for alerts
+- **Neutral**: Modern grays for text and borders
+
+### Typography
+- **Font**: Inter (Google Fonts)
+- **Hierarchy**: Clear heading structure
+- **Accessibility**: High contrast ratios
+
+### Components
+- **Cards**: Information containers with hover effects
+- **Buttons**: Action-oriented with clear states
+- **Forms**: Accessible inputs with validation
+- **Charts**: Data visualization with Recharts
+
+## 🧪 Testing & Development
+
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+### Mock Data
+The application includes comprehensive mock data for:
+- Weather conditions
+- Crop analysis results
+- AI chat responses
+- Forecast predictions
+
+Replace mock implementations with real API calls as needed.
+
+## 🌐 Deployment
+
+### Frontend Deployment
+- **Recommended**: Vercel, Netlify
+- **Alternative**: Firebase Hosting, AWS S3
+
+### Backend Deployment (Future)
+- **Recommended**: Railway, Heroku
+- **Alternative**: AWS EC2, DigitalOcean
+
+### Environment Variables
+Create `.env` file for:
+```env
+VITE_WEATHER_API_KEY=your_openweather_api_key
+VITE_BACKEND_URL=your_backend_url
+```
+
+## 🔒 Security & Privacy
+
+### Data Handling
+- Local storage for user preferences
+- Secure API communication
+- No sensitive data persistence without consent
+
+### Privacy Features
+- Offline-first approach
+- Minimal data collection
+- Clear privacy controls
+
+## 🌟 Future Enhancements
+
+### Phase 2 Features
+- [ ] Real AI model integration
+- [ ] Community chat functionality
+- [ ] Advanced weather APIs
+- [ ] Crop calendar integration
+- [ ] Market price tracking
+- [ ] Farm management tools
+
+### Technical Improvements
+- [ ] Backend API development
+- [ ] Database optimization
+- [ ] Performance monitoring
+- [ ] Advanced PWA features
+- [ ] Automated testing suite
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Use semantic commit messages
+- Maintain accessibility standards
+- Test on mobile devices
+- Consider offline functionality
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Support
+
+For support, questions, or feature requests:
+- Create an issue on GitHub
+- Contact the development team
+- Check the documentation wiki
+
+---
+
+**AgroSense** - Empowering rural farmers with AI-driven agricultural insights 🌾

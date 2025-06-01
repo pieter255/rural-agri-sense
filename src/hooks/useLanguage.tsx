@@ -149,7 +149,7 @@ const translations = {
     pestAdvice: 'Monitor for pest activity during warm weather',
     
     // Weather factors
-    weather: 'Weather',
+    weatherFactors: 'Weather',
     soilHealth: 'Soil Health',
     pestRisk: 'Pest Risk',
     waterAvailability: 'Water Availability'
@@ -284,7 +284,7 @@ const translations = {
     pestAdvice: 'Hlokola mesebetsi ea likokoanyana nakong ea leholimo le chesang',
     
     // Weather factors
-    weather: 'Leholimo',
+    weatherFactors: 'Leholimo',
     soilHealth: 'Bophelo bo Botle ba Mobu',
     pestRisk: 'Kotsi ea Likokoanyana',
     waterAvailability: 'Ho Fumaneha ha Metsi'

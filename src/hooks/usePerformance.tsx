@@ -51,7 +51,15 @@ const usePerformance = () => {
     if ('PerformanceObserver' in window) {
       const observer = new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
-          console.log('Performance entry:', entry.name, entry.value);
+          // Handle different types of performance entries
+          if (entry.entryType === 'measure') {
+            console.log('Performance measure:', entry.name, entry.duration);
+          } else if (entry.entryType === 'navigation') {
+            const navEntry = entry as PerformanceNavigationTiming;
+            console.log('Navigation timing:', entry.name, navEntry.loadEventEnd - navEntry.loadEventStart);
+          } else {
+            console.log('Performance entry:', entry.name, entry.duration || 'N/A');
+          }
         });
       });
 

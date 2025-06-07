@@ -43,6 +43,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Validate user object structure
         if (parsedUser.id && parsedUser.email && parsedUser.name) {
           setUser(parsedUser);
+          // Track login session restoration
+          console.log('User session restored for:', parsedUser.email);
         } else {
           localStorage.removeItem('agroSenseUser');
         }
@@ -58,6 +60,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
+      // Rate limiting check
+      const rateLimitKey = `login_attempts_${email}`;
+      const attempts = JSON.parse(localStorage.getItem(rateLimitKey) || '{"count": 0, "timestamp": 0}');
+      const now = Date.now();
+      
+      if (now - attempts.timestamp < 300000 && attempts.count >= 5) { // 5 minutes lockout
+        throw new Error('Too many login attempts. Please try again later.');
+      }
+      
       // Simulate API call with better validation
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -74,6 +85,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Password must be at least 6 characters');
       }
       
+      // Track successful login
+      localStorage.removeItem(rateLimitKey);
+      
       const mockUser: User = {
         id: Date.now().toString(),
         email,
@@ -82,8 +96,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       setUser(mockUser);
       localStorage.setItem('agroSenseUser', JSON.stringify(mockUser));
+      
+      // Set last login timestamp
+      localStorage.setItem('lastLogin', new Date().toISOString());
+      
       return true;
     } catch (error) {
+      // Track failed login attempt
+      const rateLimitKey = `login_attempts_${email}`;
+      const attempts = JSON.parse(localStorage.getItem(rateLimitKey) || '{"count": 0, "timestamp": 0}');
+      attempts.count = (attempts.count || 0) + 1;
+      attempts.timestamp = Date.now();
+      localStorage.setItem(rateLimitKey, JSON.stringify(attempts));
+      
       console.error('Login error:', error);
       throw error;
     } finally {
@@ -98,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Simulate API call with validation
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Enhanced validation
+      // Enhanced validation with security checks
       if (!email || !password || !name) {
         throw new Error('All fields are required');
       }
@@ -107,12 +132,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Please enter a valid email address');
       }
       
-      if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters');
+      // Strong password validation
+      if (password.length < 8) {
+        throw new Error('Password must be at least 8 characters');
+      }
+      
+      if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+        throw new Error('Password must contain uppercase, lowercase, and numbers');
       }
       
       if (name.length < 2) {
         throw new Error('Name must be at least 2 characters');
+      }
+      
+      // Check if email already exists (simulate)
+      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      if (existingUsers.find((u: any) => u.email === email)) {
+        throw new Error('An account with this email already exists');
       }
       
       const mockUser: User = {
@@ -121,8 +157,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         name
       };
       
+      // Store user in registered users list
+      existingUsers.push(mockUser);
+      localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+      
       setUser(mockUser);
       localStorage.setItem('agroSenseUser', JSON.stringify(mockUser));
+      localStorage.setItem('registrationDate', new Date().toISOString());
+      
       return true;
     } catch (error) {
       console.error('Registration error:', error);
@@ -137,6 +179,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('agroSenseUser');
     // Clear other user-specific data
     localStorage.removeItem('userPreferences');
+    localStorage.removeItem('lastLogin');
+    
+    // Clear sensitive data on logout
+    sessionStorage.clear();
+    
+    console.log('User logged out successfully');
   };
 
   return (

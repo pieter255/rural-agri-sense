@@ -1,83 +1,251 @@
 
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
-  Home, 
-  Camera, 
-  Cloud, 
-  TrendingUp, 
-  MessageCircle, 
   Menu, 
-  X 
+  Sprout, 
+  BarChart3, 
+  Users, 
+  Settings, 
+  LogOut,
+  User,
+  Bell,
+  Home
 } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useAuth } from '@/hooks/useAuth';
+import LoginModal from '@/components/LoginModal';
+import RegisterModal from '@/components/RegisterModal';
+import LanguageToggle from '@/components/LanguageToggle';
 
-interface NavigationProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}
-
-const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
+const Navigation = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const location = useLocation();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t } = useLanguage();
 
-  const navigationItems = [
-    { id: 'dashboard', icon: Home, label: t('dashboard') },
-    { id: 'camera', icon: Camera, label: t('camera') },
-    { id: 'weather', icon: Cloud, label: t('weather') },
-    { id: 'forecast', icon: TrendingUp, label: t('forecast') },
-    { id: 'advisor', icon: MessageCircle, label: t('advisor') },
+  const navigation = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, protected: true },
+    { name: 'My Farms', href: '/farms', icon: Sprout, protected: true },
+    { name: 'Market', href: '/market', icon: BarChart3 },
+    { name: 'Community', href: '/community', icon: Users },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    setMobileMenuOpen(false);
+  };
+
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(href);
+  };
+
+  const visibleNavigation = navigation.filter(item => 
+    !item.protected || (item.protected && isAuthenticated)
+  );
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 right-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-white shadow-lg"
-        >
-          {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
-      </div>
+      <nav className="bg-white shadow-lg border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2">
+              <Sprout className="h-8 w-8 text-green-600" />
+              <span className="text-xl font-bold text-gray-900">AgroSense</span>
+            </Link>
 
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50" 
-             onClick={() => setMobileMenuOpen(false)} />
-      )}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {visibleNavigation.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? 'text-green-600 bg-green-50'
+                        : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
 
-      {/* Navigation Menu */}
-      <nav className={`
-        fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50
-        md:relative md:translate-x-0 md:shadow-none
-        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">{t('navigation')}</h2>
-          <div className="space-y-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Button
-                  key={item.id}
-                  variant={activeTab === item.id ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => {
-                    onTabChange(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <Icon className="h-4 w-4 mr-3" />
-                  {item.label}
-                </Button>
-              );
-            })}
+            {/* Desktop Auth & Controls */}
+            <div className="hidden md:flex items-center space-x-4">
+              <LanguageToggle />
+              
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  <Button variant="ghost" size="sm">
+                    <Bell className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      {user?.name}
+                    </span>
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="flex items-center space-x-1"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowLogin(true)}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setShowRegister(true)}
+                  >
+                    Get Started
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-80">
+                  <div className="flex flex-col space-y-6 mt-6">
+                    {/* User Info */}
+                    {isAuthenticated && (
+                      <div className="flex items-center space-x-3 pb-4 border-b">
+                        <User className="h-8 w-8 text-gray-600" />
+                        <div>
+                          <p className="font-medium text-gray-900">{user?.name}</p>
+                          <p className="text-sm text-gray-600">{user?.email}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Navigation Links */}
+                    <div className="space-y-2">
+                      {visibleNavigation.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <Link
+                            key={item.name}
+                            to={item.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors ${
+                              isActive(item.href)
+                                ? 'text-green-600 bg-green-50'
+                                : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
+                            }`}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>{item.name}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    {/* Mobile Auth */}
+                    <div className="pt-4 border-t space-y-2">
+                      {isAuthenticated ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Settings className="h-5 w-5 mr-3" />
+                            Settings
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            onClick={handleLogout}
+                          >
+                            <LogOut className="h-5 w-5 mr-3" />
+                            Logout
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            className="w-full"
+                            onClick={() => {
+                              setShowLogin(true);
+                              setMobileMenuOpen(false);
+                            }}
+                          >
+                            Login
+                          </Button>
+                          <Button
+                            className="w-full"
+                            onClick={() => {
+                              setShowRegister(true);
+                              setMobileMenuOpen(false);
+                            }}
+                          >
+                            Get Started
+                          </Button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Language Toggle */}
+                    <div className="pt-4 border-t">
+                      <LanguageToggle />
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </nav>
+
+      {/* Auth Modals */}
+      <LoginModal 
+        isOpen={showLogin} 
+        onClose={() => setShowLogin(false)}
+        onSwitchToRegister={() => {
+          setShowLogin(false);
+          setShowRegister(true);
+        }}
+      />
+      <RegisterModal 
+        isOpen={showRegister} 
+        onClose={() => setShowRegister(false)}
+        onSwitchToLogin={() => {
+          setShowRegister(false);
+          setShowLogin(true);
+        }}
+      />
     </>
   );
 };

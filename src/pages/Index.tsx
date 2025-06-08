@@ -1,285 +1,342 @@
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Camera, 
-  MessageCircle, 
+  Sprout, 
+  BarChart3, 
+  CloudRain, 
   TrendingUp, 
-  Leaf,
-  Menu,
-  LogIn,
-  UserPlus,
-  User,
-  LogOut,
-  Settings
+  Shield, 
+  Smartphone,
+  Users,
+  ArrowRight,
+  CheckCircle,
+  Star
 } from 'lucide-react';
-import Navigation from '@/components/Navigation';
-import ImageAnalysis from '@/components/ImageAnalysis';
-import ChatAdvisor from '@/components/ChatAdvisor';
-import WeatherDashboard from '@/components/WeatherDashboard';
-import ForecastDashboard from '@/components/ForecastDashboard';
-import LanguageToggle from '@/components/LanguageToggle';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
-import PrivateDataGuard from '@/components/PrivateDataGuard';
-import Footer from '@/components/Footer';
-import DashboardStats from '@/components/DashboardStats';
-import FarmManagement from '@/components/FarmManagement';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const { t, language } = useLanguage();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
-  const handleLoginClick = () => {
-    setShowLoginModal(true);
-  };
+  const features = [
+    {
+      icon: Sprout,
+      title: 'Smart Farm Management',
+      description: 'Track your crops, monitor growth stages, and manage multiple farm locations efficiently.',
+      color: 'text-green-600'
+    },
+    {
+      icon: CloudRain,
+      title: 'Weather Intelligence',
+      description: 'Get real-time weather data and alerts to protect your crops from adverse conditions.',
+      color: 'text-blue-600'
+    },
+    {
+      icon: BarChart3,
+      title: 'Market Analytics',
+      description: 'Access current market prices and trends to maximize your profit margins.',
+      color: 'text-purple-600'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Yield Predictions',
+      description: 'AI-powered yield predictions help you plan better and increase productivity.',
+      color: 'text-orange-600'
+    },
+    {
+      icon: Shield,
+      title: 'Disease Detection',
+      description: 'Upload crop images for instant disease detection and treatment recommendations.',
+      color: 'text-red-600'
+    },
+    {
+      icon: Smartphone,
+      title: 'Mobile Optimized',
+      description: 'Access your farm data anywhere, anytime with our mobile-responsive platform.',
+      color: 'text-cyan-600'
+    }
+  ];
 
-  const handleRegisterClick = () => {
-    setShowRegisterModal(true);
-  };
+  const testimonials = [
+    {
+      name: 'Thabo Mokoena',
+      location: 'Maseru, Lesotho',
+      text: 'AgroSense helped me increase my maize yield by 30% last season. The weather alerts saved my crops twice!',
+      rating: 5
+    },
+    {
+      name: 'Mpho Sekantsi',
+      location: 'Mafeteng, Lesotho',
+      text: 'The market price tracking feature helps me sell at the right time. My profits have improved significantly.',
+      rating: 5
+    },
+    {
+      name: 'Lerato Thabane',
+      location: 'Berea, Lesotho',
+      text: 'Easy to use and very helpful for managing my vegetable farm. The disease detection is amazing!',
+      rating: 5
+    }
+  ];
 
-  const switchToRegister = () => {
-    setShowLoginModal(false);
-    setShowRegisterModal(true);
-  };
-
-  const switchToLogin = () => {
-    setShowRegisterModal(false);
-    setShowLoginModal(true);
-  };
+  const stats = [
+    { label: 'Active Farmers', value: '2,500+' },
+    { label: 'Farms Monitored', value: '15,000+' },
+    { label: 'Hectares Tracked', value: '50,000+' },
+    { label: 'Yield Increase', value: '25%' }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="bg-green-500 p-2 rounded-lg">
-                <Leaf className="h-6 w-6 text-white" />
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 py-16 text-center">
+          <div className="max-w-4xl mx-auto">
+            <Badge variant="secondary" className="mb-4">
+              🚀 Now with AI-Powered Insights
+            </Badge>
+            
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Smart Farming for
+              <span className="text-green-600"> Modern Agriculture</span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Revolutionize your farming with AI-powered crop monitoring, weather intelligence, 
+              and market insights. Join thousands of farmers already growing smarter.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {isAuthenticated ? (
+                <Link to="/dashboard">
+                  <Button size="lg" className="text-lg px-8 py-3">
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-3"
+                    onClick={() => setShowRegister(true)}
+                  >
+                    Start Free Trial
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="text-lg px-8 py-3"
+                    onClick={() => setShowLogin(true)}
+                  >
+                    Sign In
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="container mx-auto px-4 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-gray-600">{stat.label}</div>
               </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="container mx-auto px-4 py-16">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Everything You Need to Farm Smarter
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Comprehensive tools designed specifically for farmers in Lesotho and beyond.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={index} className="h-full hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className={`w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mb-4`}>
+                      <Icon className={`h-6 w-6 ${feature.color}`} />
+                    </div>
+                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="bg-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Trusted by Farmers Across Lesotho
+              </h2>
+              <p className="text-xl text-gray-600">
+                See how AgroSense is transforming agriculture one farm at a time.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="h-full">
+                  <CardContent className="p-6">
+                    <div className="flex mb-4">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
+                    <div>
+                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                      <div className="text-gray-500 text-sm">{testimonial.location}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-green-600 py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to Transform Your Farm?
+            </h2>
+            <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+              Join thousands of farmers who are already using AgroSense to increase yields, 
+              reduce costs, and grow sustainably.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {isAuthenticated ? (
+                <Link to="/dashboard">
+                  <Button size="lg" variant="secondary" className="text-lg px-8 py-3">
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                    View Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Button 
+                    size="lg" 
+                    variant="secondary" 
+                    className="text-lg px-8 py-3"
+                    onClick={() => setShowRegister(true)}
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Get Started Free
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="text-lg px-8 py-3 text-white border-white hover:bg-white hover:text-green-600"
+                    onClick={() => setShowLogin(true)}
+                  >
+                    <Users className="mr-2 h-5 w-5" />
+                    Join Community
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">AgroSense</h1>
-                <p className="text-xs text-gray-500">{t('smartAgricultureAdvisor')}</p>
+                <div className="flex items-center space-x-2 mb-4">
+                  <Sprout className="h-8 w-8 text-green-400" />
+                  <span className="text-xl font-bold">AgroSense</span>
+                </div>
+                <p className="text-gray-400">
+                  Empowering farmers with smart technology for sustainable agriculture.
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-4">Platform</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li>Farm Management</li>
+                  <li>Weather Monitoring</li>
+                  <li>Market Analytics</li>
+                  <li>Disease Detection</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-4">Support</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li>Help Center</li>
+                  <li>Community</li>
+                  <li>Contact Us</li>
+                  <li>Training</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-4">Company</h3>
+                <ul className="space-y-2 text-gray-400">
+                  <li>About Us</li>
+                  <li>Careers</li>
+                  <li>Privacy Policy</li>
+                  <li>Terms of Service</li>
+                </ul>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <LanguageToggle />
-              
-              {/* Authentication Buttons */}
-              {isAuthenticated ? (
-                <div className="flex items-center space-x-3">
-                  <div className="hidden sm:flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">
-                      Welcome, {user?.name}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={logout}
-                    className="flex items-center space-x-1"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:inline">Logout</span>
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLoginClick}
-                    className="flex items-center space-x-1"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    <span className="hidden sm:inline">Login</span>
-                  </Button>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={handleRegisterClick}
-                    className="flex items-center space-x-1 bg-green-500 hover:bg-green-600"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Register</span>
-                  </Button>
-                </div>
-              )}
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+            <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+              <p>&copy; 2024 AgroSense. All rights reserved. Made with ❤️ for farmers in Lesotho.</p>
             </div>
           </div>
-        </div>
-      </header>
-
-      <div className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {/* Welcome Section */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('welcomeMessage')}</h2>
-            <p className="text-gray-600">{t('dashboardDescription')}</p>
-            {isAuthenticated && (
-              <p className="text-green-600 text-sm mt-1">
-                Logged in as {user?.name} ({user?.email})
-              </p>
-            )}
-          </div>
-
-          {/* Main Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 bg-white">
-              <TabsTrigger value="dashboard" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('dashboard')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="farms" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Farms</span>
-              </TabsTrigger>
-              <TabsTrigger value="camera" className="flex items-center gap-2">
-                <Camera className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('camera')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="weather" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('weather')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="forecast" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('forecast')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="advisor" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('advisor')}</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="dashboard" className="space-y-6">
-              <DashboardStats />
-
-              {/* Quick Actions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('quickActions')}</CardTitle>
-                  <CardDescription>{t('quickActionsDescription')}</CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Button 
-                    onClick={() => setActiveTab('farms')}
-                    className="h-24 bg-emerald-500 hover:bg-emerald-600 flex flex-col items-center justify-center space-y-2"
-                  >
-                    <Settings className="h-8 w-8" />
-                    <span>Manage Farms</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => setActiveTab('camera')}
-                    className="h-24 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center space-y-2"
-                  >
-                    <Camera className="h-8 w-8" />
-                    <span>{t('analyzeCrop')}</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => setActiveTab('advisor')}
-                    className="h-24 bg-blue-500 hover:bg-blue-600 flex flex-col items-center justify-center space-y-2"
-                  >
-                    <MessageCircle className="h-8 w-8" />
-                    <span>{t('askAdvisor')}</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => setActiveTab('forecast')}
-                    className="h-24 bg-purple-500 hover:bg-purple-600 flex flex-col items-center justify-center space-y-2"
-                  >
-                    <TrendingUp className="h-8 w-8" />
-                    <span>{t('viewForecast')}</span>
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="farms">
-              <PrivateDataGuard
-                title="Farm Management"
-                description="Manage your farm locations, track your crops, and monitor their growth stages."
-                onLoginClick={handleLoginClick}
-              >
-                <FarmManagement />
-              </PrivateDataGuard>
-            </TabsContent>
-
-            <TabsContent value="camera">
-              <PrivateDataGuard
-                title="Crop Analysis Tool"
-                description="Upload and analyze your crop images to detect diseases and get personalized treatment recommendations."
-                onLoginClick={handleLoginClick}
-              >
-                <ImageAnalysis />
-              </PrivateDataGuard>
-            </TabsContent>
-
-            <TabsContent value="weather">
-              <WeatherDashboard />
-            </TabsContent>
-
-            <TabsContent value="forecast">
-              <PrivateDataGuard
-                title="Personalized Forecasts"
-                description="Get AI-powered yield predictions and pest forecasts tailored to your specific farm location and crop types."
-                onLoginClick={handleLoginClick}
-              >
-                <ForecastDashboard />
-              </PrivateDataGuard>
-            </TabsContent>
-
-            <TabsContent value="advisor">
-              <PrivateDataGuard
-                title="AI Farm Advisor"
-                description="Get personalized farming advice based on your crop history, local conditions, and farming practices."
-                onLoginClick={handleLoginClick}
-              >
-                <ChatAdvisor />
-              </PrivateDataGuard>
-            </TabsContent>
-          </Tabs>
-        </div>
+        </footer>
       </div>
 
-      {/* Footer */}
-      <Footer />
-
-      {/* Modals */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        switchToRegister={switchToRegister}
+      {/* Auth Modals */}
+      <LoginModal 
+        isOpen={showLogin} 
+        onClose={() => setShowLogin(false)}
+        onSwitchToRegister={() => {
+          setShowLogin(false);
+          setShowRegister(true);
+        }}
       />
-      
-      <RegisterModal
-        isOpen={showRegisterModal}
-        onClose={() => setShowRegisterModal(false)}
-        switchToLogin={switchToLogin}
+      <RegisterModal 
+        isOpen={showRegister} 
+        onClose={() => setShowRegister(false)}
+        onSwitchToLogin={() => {
+          setShowRegister(false);
+          setShowLogin(true);
+        }}
       />
-    </div>
+    </>
   );
 };
 

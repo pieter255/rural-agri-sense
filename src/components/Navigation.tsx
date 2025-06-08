@@ -233,7 +233,7 @@ const Navigation = () => {
       <LoginModal 
         isOpen={showLogin} 
         onClose={() => setShowLogin(false)}
-        onSwitchToRegister={() => {
+        switchToRegister={() => {
           setShowLogin(false);
           setShowRegister(true);
         }}
@@ -241,7 +241,7 @@ const Navigation = () => {
       <RegisterModal 
         isOpen={showRegister} 
         onClose={() => setShowRegister(false)}
-        onSwitchToLogin={() => {
+        switchToLogin={() => {
           setShowRegister(false);
           setShowLogin(true);
         }}

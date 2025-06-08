@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -323,7 +322,7 @@ const Index = () => {
       <LoginModal 
         isOpen={showLogin} 
         onClose={() => setShowLogin(false)}
-        onSwitchToRegister={() => {
+        switchToRegister={() => {
           setShowLogin(false);
           setShowRegister(true);
         }}
@@ -331,7 +330,7 @@ const Index = () => {
       <RegisterModal 
         isOpen={showRegister} 
         onClose={() => setShowRegister(false)}
-        onSwitchToLogin={() => {
+        switchToLogin={() => {
           setShowRegister(false);
           setShowLogin(true);
         }}

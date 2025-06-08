@@ -14,6 +14,8 @@ import {
   Bell
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { farmLocationService } from '@/services/dataService';
 import DashboardStats from '@/components/DashboardStats';
 import FarmManagement from '@/components/FarmManagement';
 import ImageAnalysis from '@/components/ImageAnalysis';
@@ -28,6 +30,13 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddFarm, setShowAddFarm] = useState(false);
   const [showAddCrop, setShowAddCrop] = useState(false);
+
+  // Fetch farms data for the AddCropModal
+  const { data: farms = [] } = useQuery({
+    queryKey: ['user-farms', user?.id],
+    queryFn: () => farmLocationService.getByUserId(user!.id),
+    enabled: !!user?.id
+  });
 
   const tabs = [
     { 
@@ -153,6 +162,7 @@ const Dashboard = () => {
       <AddCropModal 
         isOpen={showAddCrop}
         onClose={() => setShowAddCrop(false)}
+        farms={farms}
       />
     </div>
   );

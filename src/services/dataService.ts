@@ -27,6 +27,17 @@ export const farmLocationService = {
     return data || [];
   },
 
+  async getByUserId(userId: string): Promise<FarmLocation[]> {
+    const { data, error } = await supabase
+      .from('farm_locations')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
   async create(farm: Omit<FarmLocation, 'id' | 'created_at'>): Promise<FarmLocation> {
     const { data, error } = await supabase
       .from('farm_locations')

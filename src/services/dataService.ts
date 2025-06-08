@@ -13,6 +13,7 @@ type MarketPrice = Tables['market_prices']['Row'];
 type AgriculturalAlert = Tables['agricultural_alerts']['Row'];
 type FarmingActivity = Tables['farming_activities']['Row'];
 type WeatherData = Tables['weather_data']['Row'];
+type CropType = Database['public']['Enums']['crop_type'];
 
 // Farm Locations
 export const farmLocationService = {
@@ -192,7 +193,7 @@ export const marketService = {
     return data || [];
   },
 
-  async getPricesForCrop(cropType: string): Promise<MarketPrice[]> {
+  async getPricesForCrop(cropType: CropType): Promise<MarketPrice[]> {
     const { data, error } = await supabase
       .from('market_prices')
       .select('*')

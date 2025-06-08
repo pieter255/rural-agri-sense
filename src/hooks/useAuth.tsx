@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import useNotification from '@/hooks/useNotification';
+import type { Database } from '@/integrations/supabase/types';
+
+type CropType = Database['public']['Enums']['crop_type'];
 
 interface AuthUser {
   id: string;
@@ -12,7 +15,7 @@ interface AuthUser {
   phone?: string;
   location?: string;
   farmSize?: number;
-  primaryCrops?: string[];
+  primaryCrops?: CropType[];
   experience?: number;
 }
 
@@ -70,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               phone: profile.phone,
               location: profile.location,
               farmSize: profile.farm_size_hectares,
-              primaryCrops: profile.primary_crops,
+              primaryCrops: profile.primary_crops as CropType[],
               experience: profile.farming_experience_years
             });
           } else {

@@ -22,8 +22,7 @@ const WeatherAlerts = () => {
     queryFn: alertService.getAll,
     enabled: isAuthenticated,
     refetchInterval: 5 * 60 * 1000, // Check every 5 minutes
-    retry: 2,
-    onError: (error) => handleError(error, 'fetching weather alerts')
+    retry: 2
   });
 
   // Fetch weather data for predictions
@@ -36,9 +35,21 @@ const WeatherAlerts = () => {
     },
     enabled: isAuthenticated,
     refetchInterval: 30 * 60 * 1000, // Update every 30 minutes
-    retry: 2,
-    onError: (error) => handleError(error, 'fetching weather data')
+    retry: 2
   });
+
+  // Handle errors when they occur
+  useEffect(() => {
+    if (alertsError) {
+      handleError(alertsError, 'fetching weather alerts');
+    }
+  }, [alertsError, handleError]);
+
+  useEffect(() => {
+    if (weatherError) {
+      handleError(weatherError, 'fetching weather data');
+    }
+  }, [weatherError, handleError]);
 
   const markAsReadMutation = useMutation({
     mutationFn: alertService.markAsRead,

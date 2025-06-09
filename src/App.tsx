@@ -9,8 +9,10 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import usePWA from "@/hooks/usePWA";
 import usePerformance from "@/hooks/usePerformance";
@@ -53,40 +55,43 @@ const AppContent = () => {
 
   return (
     <ErrorBoundary>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {isEnabled('offlineMode') && <OfflineIndicator />}
-        <BrowserRouter>
-          <div className="min-h-screen bg-gray-50">
-            <Navigation />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/farms" element={<Dashboard />} />
-              <Route path="/market" element={<Dashboard />} />
-              <Route path="/community" element={<Dashboard />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
-        
-        {/* PWA Install Prompt */}
-        {isInstallable && (
-          <div className="fixed bottom-4 right-4 z-50">
-            <div className="bg-green-500 text-white p-4 rounded-lg shadow-lg">
-              <p className="text-sm mb-2">Install AgroSense for better experience!</p>
-              <button
-                onClick={installPWA}
-                className="bg-white text-green-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100"
-              >
-                Install App
-              </button>
+      <ErrorBoundaryWrapper>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {isEnabled('offlineMode') && <OfflineIndicator />}
+          <BrowserRouter>
+            <div className="min-h-screen bg-gray-50">
+              <Navigation />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/farms" element={<Dashboard />} />
+                <Route path="/market" element={<Dashboard />} />
+                <Route path="/community" element={<Dashboard />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </div>
-          </div>
-        )}
-      </TooltipProvider>
+          </BrowserRouter>
+          
+          {/* PWA Install Prompt */}
+          {isInstallable && (
+            <div className="fixed bottom-4 right-4 z-50">
+              <div className="bg-green-500 text-white p-4 rounded-lg shadow-lg">
+                <p className="text-sm mb-2">Install AgroSense for better experience!</p>
+                <button
+                  onClick={installPWA}
+                  className="bg-white text-green-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100"
+                >
+                  Install App
+                </button>
+              </div>
+            </div>
+          )}
+        </TooltipProvider>
+      </ErrorBoundaryWrapper>
     </ErrorBoundary>
   );
 };

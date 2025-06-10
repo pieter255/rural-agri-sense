@@ -1,6 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { errorService } from '@/services/errorService';
+import type { Database } from '@/integrations/supabase/types';
+
+// Use proper database types
+type CropType = Database['public']['Enums']['crop_type'];
+type GrowthStage = Database['public']['Enums']['growth_stage'];
+type DiseaseType = Database['public']['Enums']['disease_type'];
 
 export interface WeatherAlert {
   id: string;
@@ -15,18 +21,18 @@ export interface WeatherAlert {
 
 export interface CropData {
   id: string;
-  crop_type: string;
+  crop_type: CropType;
   planting_date: string;
   expected_harvest_date?: string;
   area_hectares: number;
-  growth_stage: string;
+  growth_stage: GrowthStage;
   variety?: string;
   notes?: string;
 }
 
 export interface MarketPrice {
   id: string;
-  crop_type: string;
+  crop_type: CropType;
   price_per_kg: number;
   location: string;
   market_name?: string;
@@ -93,7 +99,16 @@ export class AgriculturalService {
     }
   }
 
-  async addCrop(cropData: Omit<CropData, 'id'> & { user_id: string }): Promise<boolean> {
+  async addCrop(cropData: {
+    user_id: string;
+    crop_type: CropType;
+    planting_date: string;
+    expected_harvest_date?: string;
+    area_hectares: number;
+    growth_stage: GrowthStage;
+    variety?: string;
+    notes?: string;
+  }): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('user_crops')
@@ -108,7 +123,7 @@ export class AgriculturalService {
     }
   }
 
-  async updateCropStage(cropId: string, growthStage: string): Promise<boolean> {
+  async updateCropStage(cropId: string, growthStage: GrowthStage): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('user_crops')
@@ -171,7 +186,7 @@ export class AgriculturalService {
   async submitPestReport(pestData: {
     user_id: string;
     pest_name: string;
-    crop_type: string;
+    crop_type: CropType;
     severity: 'low' | 'medium' | 'high' | 'critical';
     description?: string;
     farm_location_id?: string;
@@ -182,7 +197,7 @@ export class AgriculturalService {
         .from('pest_reports')
         .insert([{
           ...pestData,
-          disease_type: 'pest_infestation', // Default value for enum
+          disease_type: 'pest' as DiseaseType,
           reported_at: new Date().toISOString()
         }]);
 

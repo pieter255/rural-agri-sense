@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -169,17 +170,27 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+  // Initialize state with memoryState to avoid calling useState during module load
+  const [state, setState] = React.useState<State>(() => memoryState)
 
   React.useEffect(() => {
-    listeners.push(setState)
+    // Only add listener after component mounts
+    const listener = (newState: State) => {
+      setState(newState)
+    }
+    
+    listeners.push(listener)
+    
+    // Sync with current memory state
+    setState(memoryState)
+    
     return () => {
-      const index = listeners.indexOf(setState)
+      const index = listeners.indexOf(listener)
       if (index > -1) {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [])
 
   return {
     ...state,

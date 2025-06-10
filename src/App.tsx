@@ -30,23 +30,21 @@ const queryClient = new QueryClient({
   },
 });
 
-// Separate the app content to ensure proper provider nesting
-const AppRoutes = () => {
+// Main app content component
+const AppContent = () => {
   return (
-    <ErrorBoundaryWrapper>
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/farms" element={<Dashboard />} />
-          <Route path="/market" element={<Dashboard />} />
-          <Route path="/community" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-    </ErrorBoundaryWrapper>
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/farms" element={<Dashboard />} />
+        <Route path="/market" element={<Dashboard />} />
+        <Route path="/community" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
   );
 };
 
@@ -54,17 +52,19 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <BrowserRouter>
-                <AppRoutes />
+        <BrowserRouter>
+          <TooltipProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <ErrorBoundaryWrapper>
+                  <AppContent />
+                </ErrorBoundaryWrapper>
                 <Toaster />
                 <Sonner />
-              </BrowserRouter>
-            </AuthProvider>
-          </LanguageProvider>
-        </TooltipProvider>
+              </AuthProvider>
+            </LanguageProvider>
+          </TooltipProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
   );

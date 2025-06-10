@@ -30,40 +30,33 @@ const queryClient = new QueryClient({
   },
 });
 
-// Main app content component
-const AppContent = () => {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/farms" element={<Dashboard />} />
-        <Route path="/market" element={<Dashboard />} />
-        <Route path="/community" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </div>
-  );
-};
-
 const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <TooltipProvider>
-            <LanguageProvider>
-              <AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <TooltipProvider>
                 <ErrorBoundaryWrapper>
-                  <AppContent />
+                  <div className="min-h-screen bg-gray-50">
+                    <Navigation />
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/farms" element={<Dashboard />} />
+                      <Route path="/market" element={<Dashboard />} />
+                      <Route path="/community" element={<Dashboard />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </div>
                 </ErrorBoundaryWrapper>
                 <Toaster />
                 <Sonner />
-              </AuthProvider>
-            </LanguageProvider>
-          </TooltipProvider>
+              </TooltipProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>

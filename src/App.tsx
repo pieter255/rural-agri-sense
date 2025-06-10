@@ -30,34 +30,39 @@ const queryClient = new QueryClient({
   },
 });
 
+// Simple app content without any hooks
+const AppContent = () => (
+  <div className="min-h-screen bg-gray-50">
+    <Navigation />
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/farms" element={<Dashboard />} />
+      <Route path="/market" element={<Dashboard />} />
+      <Route path="/community" element={<Dashboard />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </div>
+);
+
 const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <LanguageProvider>
-            <AuthProvider>
-              <TooltipProvider>
+        <TooltipProvider>
+          <BrowserRouter>
+            <LanguageProvider>
+              <AuthProvider>
                 <ErrorBoundaryWrapper>
-                  <div className="min-h-screen bg-gray-50">
-                    <Navigation />
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/farms" element={<Dashboard />} />
-                      <Route path="/market" element={<Dashboard />} />
-                      <Route path="/community" element={<Dashboard />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </div>
+                  <AppContent />
+                  <Toaster />
+                  <Sonner />
                 </ErrorBoundaryWrapper>
-                <Toaster />
-                <Sonner />
-              </TooltipProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </BrowserRouter>
+              </AuthProvider>
+            </LanguageProvider>
+          </BrowserRouter>
+        </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

@@ -30,7 +30,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const AppContent = () => {
+// Separate the app content to ensure proper provider nesting
+const AppRoutes = () => {
   return (
     <ErrorBoundaryWrapper>
       <div className="min-h-screen bg-gray-50">
@@ -53,17 +54,17 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
+        <TooltipProvider>
+          <LanguageProvider>
+            <AuthProvider>
               <BrowserRouter>
-                <AppContent />
+                <AppRoutes />
+                <Toaster />
+                <Sonner />
               </BrowserRouter>
-              <Toaster />
-              <Sonner />
-            </TooltipProvider>
-          </AuthProvider>
-        </LanguageProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

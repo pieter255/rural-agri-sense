@@ -170,32 +170,40 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
-  // Initialize state with memoryState to avoid calling useState during module load
-  const [state, setState] = React.useState<State>(() => memoryState)
+  // Check if we're in a React context - if not, return a safe fallback
+  try {
+    // This will throw if React dispatcher is not available
+    const [state, setState] = React.useState<State>(memoryState)
 
-  React.useEffect(() => {
-    // Only add listener after component mounts
-    const listener = (newState: State) => {
-      setState(newState)
-    }
-    
-    listeners.push(listener)
-    
-    // Sync with current memory state
-    setState(memoryState)
-    
-    return () => {
-      const index = listeners.indexOf(listener)
-      if (index > -1) {
-        listeners.splice(index, 1)
+    React.useEffect(() => {
+      const listener = (newState: State) => {
+        setState(newState)
       }
-    }
-  }, [])
+      
+      listeners.push(listener)
+      setState(memoryState)
+      
+      return () => {
+        const index = listeners.indexOf(listener)
+        if (index > -1) {
+          listeners.splice(index, 1)
+        }
+      }
+    }, [])
 
-  return {
-    ...state,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    return {
+      ...state,
+      toast,
+      dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    }
+  } catch (error) {
+    // Fallback for when React context is not available
+    console.warn('useToast called outside React context, returning fallback')
+    return {
+      toasts: [],
+      toast,
+      dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    }
   }
 }
 

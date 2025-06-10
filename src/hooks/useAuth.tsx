@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
 import useNotification from '@/hooks/useNotification';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -44,46 +43,77 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+// Clean up auth state to prevent limbo states
+const cleanupAuthState = () => {
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+  Object.keys(sessionStorage || {}).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      sessionStorage.removeItem(key);
+    }
+  });
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { showError, showSuccess } = useNotification();
 
+  // Fetch user profile - deferred to prevent deadlocks
+  const fetchUserProfile = async (userId: string, session: Session) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (profile && !error) {
+        setUser({
+          id: profile.id,
+          email: session.user.email || '',
+          name: profile.full_name,
+          phone: profile.phone,
+          location: profile.location,
+          farmSize: profile.farm_size_hectares,
+          primaryCrops: profile.primary_crops as CropType[],
+          experience: profile.farming_experience_years
+        });
+      } else {
+        // Fallback if profile doesn't exist
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.full_name || 'User'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      // Fallback user data
+      setUser({
+        id: session.user.id,
+        email: session.user.email || '',
+        name: session.user.user_metadata?.full_name || 'User'
+      });
+    }
+  };
+
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         
         if (session?.user) {
-          // Fetch user profile from our profiles table
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile && !error) {
-            setUser({
-              id: profile.id,
-              email: session.user.email || '',
-              name: profile.full_name,
-              phone: profile.phone,
-              location: profile.location,
-              farmSize: profile.farm_size_hectares,
-              primaryCrops: profile.primary_crops as CropType[],
-              experience: profile.farming_experience_years
-            });
-          } else {
-            // Fallback if profile doesn't exist
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-              name: session.user.user_metadata?.full_name || 'User'
-            });
-          }
+          // CRITICAL: Defer Supabase calls to prevent deadlocks
+          setTimeout(() => {
+            fetchUserProfile(session.user.id, session);
+          }, 0);
         } else {
           setUser(null);
         }
@@ -91,7 +121,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     );
 
-    // Check for existing session
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Existing session:', session?.user?.email);
       // The auth state change listener will handle the user setup
@@ -104,6 +134,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
+      // Clean up any existing auth state
+      cleanupAuthState();
+      
+      // Attempt global sign out first
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password
@@ -117,6 +157,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (data.user) {
         showSuccess('Successfully logged in!');
+        // Force page reload for clean state
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 500);
         return true;
       }
 
@@ -134,6 +178,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
+      // Clean up any existing auth state
+      cleanupAuthState();
+      
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -141,7 +188,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           data: {
             full_name: fullName
           },
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/dashboard`
         }
       });
 
@@ -168,13 +215,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Logout error:', error);
-        showError('Logout failed');
-      } else {
-        showSuccess('Successfully logged out');
+      // Clean up auth state first
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.error('Logout error:', err);
       }
+      
+      showSuccess('Successfully logged out');
+      
+      // Force page reload for clean state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     } catch (error: any) {
       console.error('Logout error:', error);
       showError('Logout failed');
